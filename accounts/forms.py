@@ -64,9 +64,8 @@ class LoginForm(AuthenticationForm):
 class OnDemandWorkoutForm(forms.ModelForm):
     class Meta:
         model = OnDemandWorkoutTable
-        fields = ['title', 'description', 'video_url', 'duration', 'instructor']
-    
-
+        fields = ['title', 'description', 'video_url', 'duration']
+        
 
 class GymClassForm(forms.ModelForm):
     class Meta:

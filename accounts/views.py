@@ -108,22 +108,19 @@ def ManagementDashboard(request):
 
 @login_required
 @management_required
+
 def create_workout(request):
-    success_message = None  # Initialize a variable to store the success message
     if request.method == 'POST':
         form = OnDemandWorkoutForm(request.POST)
         if form.is_valid():
-            form.instance.instructor = request.user
-            form.save()
-            success_message = 'Workout created successfully.'
-            # Optionally, you can also use Django's messages framework here
-            # messages.success(request, 'Workout created successfully.')
-            # return redirect('workout_list')
+            workout = form.save(commit=False)
+            workout.instructor = request.user  # Associate currently logged-in user as instructor
+            workout.save()
+            messages.success(request, 'Workout created successfully.')
+            # Redirect to workout list view after successful creation
     else:
         form = OnDemandWorkoutForm()
-    return render(request, 'trainers/create_workout.html', {'form': form, 'success_message': success_message})
-
-
+    return render(request, 'trainers/create_workout.html', {'form': form})
 
 
 def workout_list(request):

@@ -105,10 +105,18 @@ class OnDemandWorkoutTable(models.Model):
     description = models.TextField()
     video_url = EmbedVideoField()  # Use EmbedVideoField for YouTube video URL
     duration = models.DurationField()
-    instructor = models.ForeignKey(InstructorTable, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE)  # Change ForeignKey to User model
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        # If the instructor is not set and a user is logged in, set the currently logged-in user as the instructor
+        if not self.instructor_id and hasattr(self, 'request') and self.request.user.is_authenticated:
+            self.instructor = self.request.user
+        super().save(*args, **kwargs)
+
+        
 
 class PaymentTable(models.Model):
     payment_id = models.AutoField(primary_key=True)
