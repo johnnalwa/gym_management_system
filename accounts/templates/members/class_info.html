@@ -1,0 +1,49 @@
+{% extends 'members/base.html' %}
+{% block title %}Class info{% endblock %}
+{% block content %}
+<!-- Class Info Start -->
+
+
+<div class="container-fluid pt-4 px-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">{{ gym_class.class_name }}</h2>
+        </div>
+        <div class="card-body">
+            <p class="card-text"><strong>Instructor:</strong> {{ gym_class.instructor }}</p>
+            <p class="card-text"><strong>Description:</strong> {{ gym_class.description }}</p>
+            <p class="card-text"><strong>Day:</strong> {{ gym_class.day }}</p>
+            <p class="card-text"><strong>Time:</strong> {{ gym_class.time }}</p>
+            <p class="card-text"><strong>Capacity:</strong> {{ gym_class.capacity }}</p>
+            <p class="card-text"><strong>Status:</strong> {{ gym_class.status }}</p>
+
+            <!-- Button to schedule appointment -->
+            <a href="{% url 'schedule_appointment' gym_class.id %}" id="schedule-btn" class="btn btn-primary">Schedule Appointment</a>
+        </div>
+    </div>
+</div>
+<!-- Class Info End -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> <!-- Include SweetAlert2 script -->
+
+<script>
+    // Add event listener to the schedule appointment button
+    document.getElementById("schedule-btn").addEventListener("click", function(event) {
+        // Prevent the default behavior of the link
+        event.preventDefault();
+
+        // Simulate success message using SweetAlert2
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Appointment scheduled successfully!',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            // If "OK" is clicked, continue with the default link behavior
+            if (result.isConfirmed) {
+                window.location.href = event.target.href;
+            }
+        });
+    });
+</script>
+{% endblock %}

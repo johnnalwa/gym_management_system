@@ -1,0 +1,45 @@
+{% extends 'trainers/base.html' %}
+{% block title %}Create Workout{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        {% if success_message %}
+            <div class="alert alert-success">
+                <strong>{{ success_message }}</strong>
+            </div>
+            <script>
+                setTimeout(function() {
+                    document.querySelector('.alert-success').style.display = 'none';
+                }, 5000);  // Hide the success message after 5 seconds
+            </script>
+        {% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_title">Title:</label>
+                <input type="text" class="form-control" id="id_title" name="title">
+            </div>
+            <div class="form-group">
+                <label for="id_description">Description:</label>
+                <textarea class="form-control" id="id_description" name="description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="id_video_url">Video URL:</label>
+                <input type="text" class="form-control" id="id_video_url" name="video_url">
+            </div>
+            <div class="form-group">
+                <label for="id_duration">Duration:</label>
+                <input type="text" class="form-control" id="id_duration" name="duration">
+            </div>
+            <div class="form-group">
+                <label for="id_instructor">Instructor:</label>
+                <select class="form-control" id="id_instructor" name="instructor">
+                    <option value="">Select an instructor</option>
+                    <!-- Populate options with instructor data -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Workout</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

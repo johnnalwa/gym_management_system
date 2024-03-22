@@ -1,0 +1,19 @@
+{% extends 'members/base.html' %}
+{% block title %}Workout List{% endblock %}
+{% block content %}
+<div class="row">
+    {% for workout in workouts %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ workout.title }}</h5>
+                <p class="card-text">{{ workout.description }}</p>
+                <p class="card-text"><strong>Duration:</strong> {{ workout.duration }}</p>
+                <p class="card-text"><strong>Instructor:</strong> {{ workout.instructor }}</p>
+                <a href="{{ workout.video_url }}" class="btn btn-primary">Watch Video</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

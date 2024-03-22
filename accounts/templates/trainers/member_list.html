@@ -1,0 +1,48 @@
+{% extends 'trainers/base.html' %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Member List</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Physical Address</th>
+                    <th>Primary Phone Number</th>
+                    <th>Gender</th>
+                    <th>Profile Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>{{ member.id }}</td>
+                    <td>{{ member.user.username }}</td>
+                    <td>{{ member.first_name }}</td>
+                    <td>{{ member.last_name }}</td>
+                    <td>{{ member.physical_address }}</td>
+                    <td>{{ member.primary_phone_number }}</td>
+                    <td>{{ member.gender }}</td>
+                    <td>
+                        {% if member.profile_img %}
+                        <img src="{{ member.profile_img.url }}" alt="Profile Image" class="img-fluid" style="max-width: 100px;">
+                        {% else %}
+                        No Image
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">No members found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

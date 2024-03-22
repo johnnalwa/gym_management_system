@@ -1,0 +1,87 @@
+{% extends 'trainers/base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Gym Statistics Start -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-dumbbell fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Total Classes</p>
+                        <h6 class="mb-0"> {{ total_classes|default:"0" }}</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-users fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Total Members</p>
+                        <h6 class="mb-0">500</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-calendar-alt fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Total Schedule</p>
+                        <h6 class="mb-0">50</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-light rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-money-bill-alt fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Total Revenue</p>
+                        <h6 class="mb-0">$12,345</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Gym Statistics End -->
+
+    <!-- Gym Schedule Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-light text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Gym Schedule</h6>
+            <a href="{% url 'add_class' %}">Add Class</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-dark">
+                        <th scope="col">Class</th>
+                        <th scope="col">Instructor</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Day</th>
+                        <th scope="col">Time</th>
+                        <th scope="col">Capacity</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for gym_class in gym_classes %}
+                    <tr>
+                        <td>{{ gym_class.class_name }}</td>
+                        <td>{{ gym_class.instructor }}</td>
+                        <td>{{ gym_class.description }}</td>
+                        <td>{{ gym_class.day }}</td>
+                        <td>{{ gym_class.time }}</td>
+                        <td>{{ gym_class.capacity }}</td>
+                        <td>{{ gym_class.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Gym Schedule End -->
+
+{% endblock %}

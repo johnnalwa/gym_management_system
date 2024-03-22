@@ -1,0 +1,47 @@
+{% extends 'members/base.html' %}
+{% block title %}Appointments{% endblock %}
+{% block content %}
+<!-- Appointments Start -->
+<div class="container-fluid pt-4 px-4">
+  <h2>Appointments</h2>
+  
+  <!-- SweetAlert2 Script -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <!-- SweetAlert2 Success Message (displayed only when deletion is successful) -->
+  {% if request.method == 'POST' and messages %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: "{{ messages.0 }}"
+        });
+      });
+    </script>
+  {% endif %}
+  
+  <div class="row">
+    {% for appointment in appointments %}
+    <div class="col-md-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{ appointment.user.username }}</h5>
+          <p class="card-text">Class: {{ appointment.gym_class.class_name }}</p>
+          <p class="card-text">Day: {{ appointment.day }}</p>
+          <p class="card-text">Time: {{ appointment.time }}</p>
+          <!-- Additional fields can be displayed here -->
+
+          <!-- Delete button -->
+          <form action="{% url 'delete_appointment' appointment.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<!-- Appointments End -->
+{% endblock %}
