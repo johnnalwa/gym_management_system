@@ -51,8 +51,10 @@
                         <th scope="col">Instructor</th>
                         <th scope="col">Description</th>
                         <th scope="col">Day</th>
-                        <th scope="col">Time</th>
+                        <th scope="col">Start Time</th>
+                        <th scope="col">End Time</th>
                         <th scope="col">Capacity</th>
+                        <th scope="col">Charged Amount</th>
                         <th scope="col">Status</th>
                         <th scope="col">Actions</th> <!-- New column for actions -->
                     </tr>
@@ -64,8 +66,10 @@
                         <td>{{ gym_class.instructor }}</td>
                         <td>{{ gym_class.description }}</td>
                         <td>{{ gym_class.day }}</td>
-                        <td>{{ gym_class.time }}</td>
+                        <td>{{ gym_class.start_time }}</td>
+                        <td>{{ gym_class.end_time }}</td>
                         <td>{{ gym_class.capacity }}</td>
+                        <td>{{ gym_class.charged_amount }}</td>
                         <td>{{ gym_class.status }}</td>
                         <td>
                             <a href="{% url 'class_info' gym_class.id %}" class="btn btn-success">View Details</a>
@@ -78,5 +82,6 @@
     </div>
 </div>
 <!-- Gym Schedule End -->
+
 
 {% endblock %}

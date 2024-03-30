@@ -29,6 +29,8 @@ urlpatterns = [
     path('management/add-class/', views.add_class, name='add_class'),  # URL for the class creation form
 
     path('management/upload/', views.upload_video, name='upload_video'),
+    path('members/ondemand_workouts/', views.video_list, name='video_list'),
+
 
     
 

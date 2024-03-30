@@ -1,46 +1,63 @@
-<!-- upload_video.html -->
 {% extends 'trainers/base.html' %}
 {% block content %}
 <h2>Upload Video</h2>
 <form method="post" enctype="multipart/form-data" id="upload-form">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="button" id="upload-btn">Upload</button>
+    <button type="button" id="upload-btn">Upload Workouts Video</button>
 </form>
+
+<div class="table-responsive mt-4">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Video ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for video in videos %}
+            <tr>
+                <td>{{ video.video_id }}</td>
+                <td>{{ video.title }}</td>
+                <td>{{ video.description }}</td>
+                <td>
+                    <button class="btn btn-danger delete-btn" data-video-id="{{ video.id }}">Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-    // Add event listener to the upload button
+    // JavaScript code for handling form submission and displaying success message
     document.getElementById("upload-btn").addEventListener("click", function() {
-        // Prevent the default behavior of the form submission
-        event.preventDefault();
+        event.preventDefault(); // Prevent the default form submission behavior
 
-        // Submit the form using AJAX
         var form = document.getElementById("upload-form");
         var formData = new FormData(form);
 
-        // Send AJAX request
         fetch("{% url 'upload_video' %}", {
             method: "POST",
             body: formData
         })
         .then(response => {
             if (response.ok) {
-                // If upload is successful, show success message and clear the form
                 return response.text();
             } else {
-                // If upload fails, show error message
                 throw new Error('Upload Failed!');
             }
         })
         .then(data => {
-            // Display the success message
             showSuccessToast(data);
-            // Clear the form fields
             clearFormFields();
+            refreshTable(); // Refresh the table after successful upload
         })
         .catch(error => {
-            // Handle any errors that occur during the upload process
             console.error('Error:', error);
             Swal.fire({
                 icon: 'error',
@@ -51,7 +68,7 @@
         });
     });
 
-    // Function to show toastr success message
+    // Function to show success message
     function showSuccessToast(message) {
         Swal.fire({
             icon: 'success',
@@ -59,7 +76,6 @@
             text: message,
             confirmButtonText: 'OK'
         }).then((result) => {
-            // If "OK" is clicked, reload the page
             if (result.isConfirmed) {
                 window.location.reload();
             }
@@ -70,6 +86,65 @@
     function clearFormFields() {
         var form = document.getElementById("upload-form");
         form.reset();
+    }
+
+    // Function to refresh the table
+    function refreshTable() {
+        fetch("{% url 'upload_video' %}")
+        .then(response => response.text())
+        .then(data => {
+            document.querySelector('table').innerHTML = data;
+        });
+    }
+
+    // Add event listener to delete buttons
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            var videoId = this.getAttribute('data-video-id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteVideo(videoId);
+                }
+            });
+        });
+    });
+
+    // Function to delete video
+    function deleteVideo(videoId) {
+        fetch(`/management/delete/${videoId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Delete Failed!');
+            }
+        })
+        .then(data => {
+            showSuccessToast(data);
+            refreshTable(); // Refresh the table after successful deletion
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Something went wrong!',
+                confirmButtonText: 'OK'
+            });
+        });
     }
 </script>
 {% endblock %}

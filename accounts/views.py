@@ -214,4 +214,12 @@ def upload_video(request):
             return HttpResponse('Video uploaded successfully!')
     else:
         form = VideoForm()
-    return render(request, 'trainers/upload_video.html', {'form': form})
+
+    # Fetch all videos from the database
+    videos = Video.objects.all()
+    return render(request, 'trainers/upload_video.html', {'form': form, 'videos': videos})
+
+
+def video_list(request):
+    videos = Video.objects.all()
+    return render(request, 'members/video_list.html', {'videos': videos})

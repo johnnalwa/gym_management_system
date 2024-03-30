@@ -78,9 +78,11 @@ class GymClass(models.Model):
     instructor = models.CharField(max_length=100)
     description = models.TextField()
     day = models.CharField(max_length=20, choices=DAY_CHOICES)
-    time = models.TimeField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     capacity = models.PositiveIntegerField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    charged_amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.class_name} - {self.day}"

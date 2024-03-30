@@ -72,14 +72,14 @@ class OnDemandWorkoutForm(forms.ModelForm):
         model = OnDemandWorkoutTable
         fields = ['title', 'description', 'video_url', 'duration']
         
-
 class GymClassForm(forms.ModelForm):
     class Meta:
         model = GymClass
-        fields = ['class_name', 'instructor', 'description', 'day', 'time', 'capacity', 'status']
+        fields = ['class_name', 'instructor', 'description', 'day', 'start_time', 'end_time', 'capacity', 'status', 'charged_amount']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
-            'time': forms.TimeInput(attrs={'type': 'time'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
 
 
