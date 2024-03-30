@@ -116,7 +116,17 @@ class OnDemandWorkoutTable(models.Model):
             self.instructor = self.request.user
         super().save(*args, **kwargs)
 
-        
+
+
+class Video(models.Model):
+    video_id = models.CharField(max_length=20)  # Assuming video IDs are alphanumeric and have a maximum length of 20 characters
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title    
+
+
 
 class PaymentTable(models.Model):
     payment_id = models.AutoField(primary_key=True)

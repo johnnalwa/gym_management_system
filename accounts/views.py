@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import tostring
 from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
@@ -11,10 +12,21 @@ from .decorators import *
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from django.shortcuts import render, get_object_or_404
+from .forms import EquipmentForm
+
+def create_equipment(request):
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('create_equipment')  # Redirect to a success page
+    else:
+        form = EquipmentForm()
+    return render(request, 'members/equipment_form.html', {'form': form})
 
 
 
@@ -162,7 +174,7 @@ def schedule_appointment(request, class_id):
     appointment = Appointment.objects.create(
         user=user,
         gym_class=gym_class,
-        day=gym_class.day, 
+        day=gym_class.day,
         time=gym_class.time   # Assuming gym_class has a 'time' field
     )
 
@@ -190,3 +202,16 @@ def delete_appointment(request, appointment_id):
     appointments = Appointment.objects.all()
     
     return render(request, 'members/appointment_list.html', {'appointments': appointments})
+
+
+
+def upload_video(request):
+    if request.method == 'POST':
+        form = VideoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Return success message as plain text
+            return HttpResponse('Video uploaded successfully!')
+    else:
+        form = VideoForm()
+    return render(request, 'trainers/upload_video.html', {'form': form})

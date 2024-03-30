@@ -3,9 +3,15 @@ from django.db import transaction
 from .models import *
 from django import forms
 from django.contrib.auth import get_user_model
+from .models import EquipmentTable
 
 
 User = get_user_model()
+
+class EquipmentForm(forms.ModelForm):
+    class Meta:
+        model = EquipmentTable
+        fields = ['name', 'quantity', 'last_maintenance_date']
 
 class MemberSignUpForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control radius-30 ps-5"}), label=("Email"))
@@ -77,3 +83,7 @@ class GymClassForm(forms.ModelForm):
         }
 
 
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ['video_id', 'title', 'description']
