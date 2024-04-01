@@ -17,6 +17,8 @@ urlpatterns = [
     path('schedule-appointment/<int:class_id>/', views.schedule_appointment, name='schedule_appointment'),
     path('appointments/<int:appointment_id>/delete/', views.delete_appointment, name='delete_appointment'),
      
+    path('initiate-payment/', views.initiate_payment, name='initiate_payment'),
+    # path('callback/', views.payment_callback, name='payment-callback'),
 
     
   

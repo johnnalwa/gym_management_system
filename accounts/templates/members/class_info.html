@@ -20,32 +20,101 @@
             <p class="card-text"><strong>Status:</strong> {{ gym_class.status }}</p>
 
             <!-- Button to schedule appointment -->
-            <a href="{% url 'schedule_appointment' gym_class.id %}" id="schedule-btn" class="btn btn-primary">Schedule Appointment</a>
+            <button id="schedule-btn" class="btn btn-primary">Enroll</button>
         </div>
     </div>
 </div>
 <!-- Class Info End -->
+
+<!-- Modal -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Make Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Charged Amount:</strong> {{ gym_class.charged_amount }}</p>
+                <form id="paymentForm">
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number:</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmPayment" class="btn btn-primary">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> <!-- Include SweetAlert2 script -->
 
 <script>
     // Add event listener to the schedule appointment button
     document.getElementById("schedule-btn").addEventListener("click", function(event) {
-        // Prevent the default behavior of the link
-        event.preventDefault();
+        // Open the modal
+        $('#scheduleModal').modal('show');
+    });
+     var className = document.querySelector('.card-title').textContent.trim();
+    // Add event listener to the confirm payment button
+    document.getElementById("confirmPayment").addEventListener("click", function(event) {
+        var phoneNumber = document.getElementById("phoneNumber").value;
+        var chargedAmount = "{{ gym_class.charged_amount }}"; // Fetch charged amount from template
+       
 
-        // Simulate success message using SweetAlert2
-        Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Appointment scheduled successfully!',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            // If "OK" is clicked, continue with the default link behavior
-            if (result.isConfirmed) {
-                window.location.href = event.target.href;
+
+        // You can add additional validation here if needed
+
+        // AJAX request to initiate payment
+        $.ajax({
+            type: "POST",
+            url: "{% url 'initiate_payment' %}",
+            data: JSON.stringify({
+                phoneNumber: phoneNumber,
+                chargedAmount: chargedAmount,
+                 className: className, 
+            }),
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    // Payment initiated successfully
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Payment initiated successfully!',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload(); // Reload the page
+                        }
+                    });
+                } else {
+                    // Payment initiation failed
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: response.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                // Handle AJAX errors
+                console.error(xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Failed to initiate payment. Please try again later.',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     });
 </script>
+
 {% endblock %}

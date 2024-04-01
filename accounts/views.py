@@ -1,22 +1,24 @@
-from xml.etree.ElementTree import tostring
+import base64
+from datetime import datetime  
+import json
 from django.shortcuts import render
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
+import requests
 from .models import *
 from .forms import *
-from django.contrib.auth import login, update_session_auth_hash
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from .decorators import *
-from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse, JsonResponse
-from django.db.models import Sum
-from django.db.models.functions import TruncMonth
 from django.shortcuts import render, get_object_or_404
 from .forms import EquipmentForm
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 
@@ -227,3 +229,127 @@ def add_equipment(request):
     else:
         form = EquipmentForm()
         return render(request, 'trainers/add_equipment.html', {'form': form})
+    
+
+
+@csrf_exempt
+def initiate_payment(request):
+    if request.method == 'POST':
+        try:
+            # Extracting data from the request
+            post_data = json.loads(request.body)
+            telephone = post_data.get("phoneNumber")
+            charged_amount = post_data.get("chargedAmount")
+            class_name = request.POST.get('className')
+
+            # Validate charged amount
+            try:
+                charged_amount = float(charged_amount)
+                if charged_amount <= 0:
+                    raise ValueError("Invalid amount")
+            except (ValueError, TypeError):
+                return JsonResponse({"success": False, "message": "Invalid amount"})
+
+            # Save payment information to the database
+            # Assuming you have a Payment model with a transaction_id field
+            # Here, you'll need to replace 'transaction_id' with the actual name of your transaction_id field
+            payment = Payment.objects.create(
+                telephone=telephone,
+                charged_amount=charged_amount,
+                # transaction_id=None  # Initially set transaction_id to None
+            )
+
+            # M-PESA Credentials
+            consumerKey = '4C3mkwwnUaq8AsSZ6ig0lGzEVrfNuLO9'
+            consumerSecret = 'T9vB9MUhf8hRKocz'
+            BusinessShortCode = '174379'
+            Passkey = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+            
+            Timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            Password = base64.b64encode((BusinessShortCode + Passkey + Timestamp).encode()).decode('utf-8')
+            
+            access_token_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+            response = requests.get(access_token_url, auth=(consumerKey, consumerSecret))
+
+            if response.status_code == 200:
+                access_token = response.json().get("access_token")
+                initiate_url = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest'
+                headers = {
+                    "Authorization": f"Bearer {access_token}",
+                    "Content-Type": "application/json"
+                }
+                
+                CallBackURL = 'https://35e4-197-248-229-71.ngrok-free.app/callback'
+
+                payload = {
+                    'BusinessShortCode': BusinessShortCode,
+                    'Password': Password,
+                    'Timestamp': Timestamp,
+                    'TransactionType': 'CustomerPayBillOnline',
+                    'Amount': charged_amount,
+                    'PartyA': telephone,
+                    'PartyB': BusinessShortCode,
+                    'PhoneNumber': telephone,
+                    'CallBackURL': CallBackURL,
+                    'AccountReference': 'Gym Management System',
+                    'TransactionDesc': f'Payment for {class_name} class',
+
+                }
+
+                response = requests.post(initiate_url, headers=headers, json=payload)
+                response_data = response.json()  # Parse JSON response and store it in response_data variable
+
+                if response.status_code == 200:
+                    # Assuming the transaction_id is provided in the response
+                    transaction_id = response_data.get('TransactionID')
+                    payment.transaction_id = transaction_id
+                    payment.save()  # Update the payment object with the transaction_id
+                    success_message = response_data.get('ResponseDescription', 'Payment initiated successfully.')
+                    return JsonResponse({"success": True, "message": success_message})
+                else:
+                    error_message = response_data.get('errorMessage', 'Failed to initiate payment.')
+                    return JsonResponse({"success": False, "message": error_message})
+            else:
+                logger.error(f"Failed to get access token. Status code: {response.status_code}, Content: {response.content}")
+                return JsonResponse({"success": False, "message": "Failed to get access token."})
+        
+        except Exception as e:
+            logger.exception("Error occurred during payment initiation")
+            return JsonResponse({"success": False, "message": "An error occurred during payment initiation. Please try again later."})
+
+
+
+
+# @csrf_exempt
+# def payment_callback(request):
+#     if request.method == 'POST':
+#         try:
+#             # Parse the JSON data from the request body
+#             callback_data = json.loads(request.body)
+
+#             # Extract relevant information from the callback data
+#             transaction_id = callback_data.get('TransactionID')
+#             amount = callback_data.get('Amount')
+#             status_code = callback_data.get('ResultCode')
+#             status_description = callback_data.get('ResultDesc')
+
+#             # Create a new Payment object with the received transaction ID
+#             payment = Payment.objects.create(
+#                 transaction_id=transaction_id,
+#                 amount=amount,  # Assuming you have an 'amount' field in your Payment model
+#                 status_code=status_code,
+#                 status_description=status_description
+#             )
+
+#             # Return a success response to the payment gateway
+#             return HttpResponse(status=200)
+
+#         except Exception as e:
+#             # Log any errors that occur during callback processing
+#             print(f"Error processing payment callback: {str(e)}")
+#             # Return an error response to the payment gateway
+#             return HttpResponse(status=500)
+
+#     else:
+#         # Return an error response for unsupported request methods
+#         return HttpResponse(status=405)
