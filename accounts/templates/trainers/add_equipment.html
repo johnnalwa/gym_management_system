@@ -1,0 +1,96 @@
+{% extends 'trainers/base.html' %}
+
+{% block title %}Add Equipment{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Add Equipment</h2>
+        </div>
+        <div class="card-body">
+            <form id="add-equipment-form" method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="id_name">Name:</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_quantity">Quantity:</label>
+                            {{ form.quantity }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_last_maintenance_date">Last Maintenance Date:</label>
+                            <input type="date" class="form-control" id="id_last_maintenance_date" name="last_maintenance_date" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_manufacturer">Manufacturer:</label>
+                            {{ form.manufacturer }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="id_model_number">Model Number:</label>
+                            {{ form.model_number }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_purchase_date">Purchase Date:</label>
+                            <input type="date" class="form-control" id="id_purchase_date" name="purchase_date" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_warranty_expiry_date">Warranty Expiry Date:</label>
+                            <input type="date" class="form-control" id="id_warranty_expiry_date" name="warranty_expiry_date" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_location">Location:</label>
+                            {{ form.location }}
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="id_is_available">Is Available:</label>
+                            {{ form.is_available }}
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more fields here -->
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('#add-equipment-form').submit(function(event) {
+            event.preventDefault(); // Prevent form submission
+            var formData = $(this).serialize(); // Serialize form data
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "add_equipment" %}',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }, // Include CSRF token
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Equipment added successfully!",
+                            icon: "success"
+                        });
+                        // Clear form fields
+                        $('#add-equipment-form')[0].reset();
+                    } else {
+                        // Handle form errors if any
+                        console.log(response.errors); // Log errors to console for debugging
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // Log error message to console
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

@@ -8,10 +8,6 @@ from .models import EquipmentTable
 
 User = get_user_model()
 
-class EquipmentForm(forms.ModelForm):
-    class Meta:
-        model = EquipmentTable
-        fields = ['name', 'quantity', 'last_maintenance_date']
 
 class MemberSignUpForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control radius-30 ps-5"}), label=("Email"))
@@ -87,3 +83,12 @@ class VideoForm(forms.ModelForm):
     class Meta:
         model = Video
         fields = ['video_id', 'title', 'description']
+
+
+
+
+
+class EquipmentForm(forms.ModelForm):
+    class Meta:
+        model = EquipmentTable
+        fields = '__all__'

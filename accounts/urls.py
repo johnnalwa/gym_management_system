@@ -16,7 +16,6 @@ urlpatterns = [
     path('class/<int:class_id>/', views.class_info, name='class_info'),
     path('schedule-appointment/<int:class_id>/', views.schedule_appointment, name='schedule_appointment'),
     path('appointments/<int:appointment_id>/delete/', views.delete_appointment, name='delete_appointment'),
-    path('members/create_equipment/', views.create_equipment, name='create_equipment'),
      
 
     
@@ -30,6 +29,9 @@ urlpatterns = [
 
     path('management/upload/', views.upload_video, name='upload_video'),
     path('members/ondemand_workouts/', views.video_list, name='video_list'),
+
+    path('management/add/', views.add_equipment, name='add_equipment'),
+
 
 
     

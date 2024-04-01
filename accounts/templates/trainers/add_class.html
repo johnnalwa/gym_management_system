@@ -27,7 +27,8 @@ $(document).ready(function() {
                         text: "Class added successfully!",
                         icon: "success"
                     });
-                    // Optionally, you can do further actions like clearing the form fields, updating UI, etc.
+                    // Clear form fields
+                    $('#add-class-form')[0].reset();
                 } else {
                     // Handle form errors if any
                     console.log(response.errors); // Log errors to console for debugging

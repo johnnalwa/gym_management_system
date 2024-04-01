@@ -18,16 +18,6 @@ from django.db.models.functions import TruncMonth
 from django.shortcuts import render, get_object_or_404
 from .forms import EquipmentForm
 
-def create_equipment(request):
-    if request.method == 'POST':
-        form = EquipmentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('create_equipment')  # Redirect to a success page
-    else:
-        form = EquipmentForm()
-    return render(request, 'members/equipment_form.html', {'form': form})
-
 
 
 def login(request):
@@ -223,3 +213,17 @@ def upload_video(request):
 def video_list(request):
     videos = Video.objects.all()
     return render(request, 'members/video_list.html', {'videos': videos})
+
+
+def add_equipment(request):
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Equipment added successfully!')
+            return JsonResponse({'success': True, 'message': 'Equipment added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    else:
+        form = EquipmentForm()
+        return render(request, 'trainers/add_equipment.html', {'form': form})

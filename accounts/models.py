@@ -88,11 +88,21 @@ class GymClass(models.Model):
         return f"{self.class_name} - {self.day}"
 
 
+
 class EquipmentTable(models.Model):
     equipment_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=200)  # Added a name field for demonstration
+    name = models.CharField(max_length=200)
     quantity = models.IntegerField()
     last_maintenance_date = models.DateField()
+    manufacturer = models.CharField(max_length=100)
+    model_number = models.CharField(max_length=50)
+    purchase_date = models.DateField()
+    warranty_expiry_date = models.DateField()
+    location = models.CharField(max_length=200)
+    is_available = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.name
 
 class LiveStreamSessionsTable(models.Model):
     session_id = models.AutoField(primary_key=True)
