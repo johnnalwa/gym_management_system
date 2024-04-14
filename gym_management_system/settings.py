@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-(t$*1grmh#^p$s%#_(*o+2opr@4=h-oziuya0nd2uqf5ou11xm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['1d6b-197-248-229-71.ngrok-free.app', '127.0.0.1']
 
 
 # Application definition
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'embed_video',
-
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -70,8 +70,22 @@ TEMPLATES = [
         },
     },
 ]
-
+...
 WSGI_APPLICATION = 'gym_management_system.wsgi.application'
+
+# Channels settings
+ASGI_APPLICATION = 'gym_management_system.routing.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
+...
+
 
 
 # Database
@@ -157,6 +171,10 @@ CORS_ALLOWED_ORIGINS = [
     'https://code.jquery.com',
     # Add other origins if necessary
 ]
+
+# CSRF_TRUSTED_ORIGINS
+CORS_ORIGIN_WHITELIST=['http://127.0.0.1:3000', 'https://1d6b-197-248-229-71.ngrok-free.app','http://127.0.0.1:3000','http://127.0.0.1','http://164.92.88.33','http://164.92.88.33']
+CSRF_TRUSTED_ORIGINS=['http://127.0.0.1:3000','http://127.0.0.1:3000', 'https://1d6b-197-248-229-71.ngrok-free.app', 'http://127.0.0.1','http://164.92.88.33','http://164.92.88.33']
 
 AUTH_USER_MODEL = "accounts.User" 
 LOGIN_REDIRECT_URL = 'member_dashboard'

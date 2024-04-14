@@ -1,0 +1,135 @@
+{% extends 'trainers/base.html' %}
+{% block content %}
+    <style>
+        .video-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 400px;
+            height: 300px;
+            margin: 0 10px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #chat-messages {
+            width: 400px;
+            height: 200px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        #chat-input {
+            width: 300px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Conference Room: {{ room_name }}</h1>
+    <div class="video-container">
+        <video id="local-video" autoplay playsinline></video>
+        <video id="remote-video" autoplay playsinline></video>
+    </div>
+    <div class="controls">
+        <button id="start-call" onclick="startCall()">Start Call</button>
+        <button id="stop-call" onclick="stopCall()" disabled>Stop Call</button>
+    </div>
+    <div class="chat-container">
+        <div id="chat-messages"></div>
+        <input type="text" id="chat-input" placeholder="Type your message...">
+        <button id="send-message">Send</button>
+    </div>
+
+    <script>
+        const roomName = '{{ room_name }}';
+        const wsUrl = 'ws://' + window.location.host + '/ws/' + roomName + '/';
+        const webSocket = new WebSocket(wsUrl);
+
+        const localVideo = document.getElementById('local-video');
+        const remoteVideo = document.getElementById('remote-video');
+        let peerConnection;
+        let localStream;
+
+        webSocket.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if (data.message === 'offer') {
+                await createPeerConnection();
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                webSocket.send(JSON.stringify({ 'message': 'answer', 'answer': answer }));
+            } else if (data.message === 'answer') {
+                await createPeerConnection();
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            } else if (data.message === 'ice_candidate') {
+                if (peerConnection) {
+                    try {
+                        await peerConnection.addIceCandidate(data.ice_candidate);
+                    } catch (e) {
+                        console.error('Error adding ICE candidate:', e);
+                    }
+                }
+            }
+        };
+
+        async function createPeerConnection() {
+            if (!peerConnection) {
+                peerConnection = new RTCPeerConnection();
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                peerConnection.ontrack = (event) => {
+                    remoteVideo.srcObject = event.streams[0];
+                };
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        webSocket.send(JSON.stringify({ 'message': 'ice_candidate', 'ice_candidate': event.candidate }));
+                    }
+                };
+            }
+        }
+
+        async function startCall() {
+            await createPeerConnection();
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            webSocket.send(JSON.stringify({ 'message': 'offer', 'offer': offer }));
+            document.getElementById('start-call').disabled = true;
+            document.getElementById('stop-call').disabled = false;
+        }
+
+        async function stopCall() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+
+            remoteVideo.srcObject = null;
+            localVideo.srcObject = null;
+
+            document.getElementById('start-call').disabled = false;
+            document.getElementById('stop-call').disabled = true;
+        }
+    </script>
+{% endblock %}

@@ -1,35 +1,71 @@
 {% extends 'trainers/base.html' %}
 {% block content %}
-<h2>Upload Video</h2>
-<form method="post" enctype="multipart/form-data" id="upload-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="button" id="upload-btn">Upload Workouts Video</button>
-</form>
-
-<div class="table-responsive mt-4">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Video ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for video in videos %}
-            <tr>
-                <td>{{ video.video_id }}</td>
-                <td>{{ video.title }}</td>
-                <td>{{ video.description }}</td>
-                <td>
-                    <button class="btn btn-danger delete-btn" data-video-id="{{ video.id }}">Delete</button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Upload Workout Video</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="upload-form">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="form-group row">
+                        <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label">{{ field.label }}</label>
+                        <div class="col-sm-9">
+                            {% if field.field.widget.input_type == 'textarea' %}
+                            {{ field|safe }}
+                            {% else %}
+                            {{ field }}
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {{ field.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <button type="button" id="upload-btn" class="btn btn-primary">Upload Workouts Video</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Videos</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Video ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for video in videos %}
+                            <tr>
+                                <td>{{ video.video_id }}</td>
+                                <td>{{ video.title }}</td>
+                                <td>{{ video.description }}</td>
+                                <td>
+                                    <button class="btn btn-danger delete-btn" data-video-id="{{ video.id }}">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

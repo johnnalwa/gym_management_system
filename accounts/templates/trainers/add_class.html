@@ -1,45 +1,129 @@
 {% extends 'trainers/base.html' %}
-
 {% block content %}
-<form id="add-class-form" method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
+<div class="container">
+    <form id="add-class-form" method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.class_name.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        </div>
+                        {{ form.class_name }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.instructor.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        {{ form.instructor }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                        </div>
+                        {{ form.description }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form.day.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                        {{ form.day }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.start_time.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        </div>
+                        <input type="time" class="form-control" id="{{ form.start_time.id_for_label }}" name="{{ form.start_time.html_name }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.end_time.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                        </div>
+                        <input type="time" class="form-control" id="{{ form.end_time.id_for_label }}" name="{{ form.end_time.html_name }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.capacity.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-users"></i></span>
+                        </div>
+                        {{ form.capacity }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.status.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-toggle-on"></i></span>
+                        </div>
+                        {{ form.status }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form.charged_amount.label_tag }}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                        </div>
+                        {{ form.charged_amount }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    $('#add-class-form').submit(function(event) {
-        event.preventDefault(); // Prevent form submission
-        var formData = $(this).serialize(); // Serialize form data
-
-        $.ajax({
-            type: 'POST',
-            url: '{% url "add_class" %}',
-            data: formData,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        title: "Success!",
-                        text: "Class added successfully!",
-                        icon: "success"
-                    });
-                    // Clear form fields
-                    $('#add-class-form')[0].reset();
-                } else {
-                    // Handle form errors if any
-                    console.log(response.errors); // Log errors to console for debugging
+    $(document).ready(function() {
+        $('#add-class-form').submit(function(event) {
+            event.preventDefault(); // Prevent form submission
+            var formData = $(this).serialize(); // Serialize form data
+            $.ajax({
+                type: 'POST',
+                url: '{% url "add_class" %}',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Class added successfully!",
+                            icon: "success"
+                        });
+                        // Clear form fields
+                        $('#add-class-form')[0].reset();
+                    } else {
+                        // Handle form errors if any
+                        console.log(response.errors); // Log errors to console for debugging
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText); // Log error message to console
                 }
-            },
-            error: function(xhr, errmsg, err) {
-                console.log(xhr.status + ": " + xhr.responseText); // Log error message to console
-            }
+            });
         });
     });
-});
 </script>
-
 {% endblock %}

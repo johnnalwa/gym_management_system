@@ -10,7 +10,7 @@ class User(AbstractUser):
 
 
 class InstructorTable(models.Model):
-    id = models.AutoField(primary_key=True, default=1)  # Provide a default value for the id field
+    id = models.AutoField(primary_key=True)  
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='instructor_profile')
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)

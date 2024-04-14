@@ -46,13 +46,12 @@
             <!-- Navigation Links for Gym Management -->
             <nav class="navbar bg-light navbar-light">
                 <a href="{% url 'member_dashboard' %}" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary">Gym Dashboard</h3>
+                    <h3 class="text-primary">Members Dashboard</h3>
                 </a>
                 <!-- Add Gym-related links in the sidebar -->
                 <div class="navbar-nav w-100">
                     <a href="{% url 'member_dashboard' %}" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-                    <a href="" class="nav-item nav-link"><i class="fa fa-dumbbell me-2"></i>Classes</a>
-                    <a href="" class="nav-item nav-link"><i class="fa fa-user me-2"></i>Members</a>
+                    <a href="{% url 'video_list' %}" class="nav-item nav-link"><i class="fa fa-dumbbell me-2"></i>Workouts</a>
                     <a href="{% url 'appointment_list' %}" class="nav-item nav-link"><i class="fa fa-calendar-alt me-2"></i>My Appointments</a>
                     <a href="" class="nav-item nav-link"><i class="fa fa-money-bill-alt me-2"></i>Payments</a>
                 </div>

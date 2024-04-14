@@ -16,6 +16,13 @@
                         </div>
                         <div class="col-md-6 col-lg-7 d-flex align-items-center">
                             <div class="card-body p-4 p-lg-5 text-black">
+                                {% if messages %}
+                                <div class="alert alert-danger" role="alert">
+                                    {% for message in messages %}
+                                    {{ message }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                                 <form class="form-body" action="{% url 'user_login' %}" method="POST">
                                     {% csrf_token %}
                                     <div class="d-flex align-items-center mb-3 pb-1">

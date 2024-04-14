@@ -33,6 +33,9 @@ urlpatterns = [
     path('members/ondemand_workouts/', views.video_list, name='video_list'),
 
     path('management/add/', views.add_equipment, name='add_equipment'),
+    path('room/<str:room_name>/', views.video_conference_room, name='video_conference_room'),
+    
+
 
 
 

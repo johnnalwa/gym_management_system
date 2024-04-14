@@ -44,12 +44,12 @@ class LoginView(auth_views.LoginView):
                 return reverse('member_dashboard')
             elif user.is_management:
                 return reverse('management_dashboard')
-            
-            
-        else:
-            return reverse('login')
-        
+            else:
+                return reverse('login')
 
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid username or password.')
+        return super().form_invalid(form)
 
 class RegisterMemberView(CreateView):
     model = User
@@ -353,3 +353,13 @@ def initiate_payment(request):
 #     else:
 #         # Return an error response for unsupported request methods
 #         return HttpResponse(status=405)
+
+
+
+
+from django.shortcuts import render
+
+def video_conference_room(request, room_name):
+    return render(request, 'trainers/room.html', {
+        'room_name': room_name
+    })
